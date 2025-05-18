@@ -1,35 +1,115 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import './App.css';
+
+type Profile = {
+  firstName: string;
+  lastName: string;
+  age: number;
+  companyName: string;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState<Profile>({
+    firstName: '',
+    lastName: '',
+    age: 0,
+    companyName: '',
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      const fakeData: Profile = {
+        firstName: 'John',
+        lastName: 'Doe',
+        age: 30,
+        companyName: 'OpenAI',
+      };
+      setProfile(fakeData);
+      setFormData(fakeData);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSave = () => {
+    setTimeout(() => {
+      setProfile(formData);
+      setEditMode(false);
+    }, 1000);
+  };
+
+  if (!profile || isLoading) return <p>Loading profile...</p>;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main>
+      <section className='section'>
+        <h1>Profile Page</h1>
+        {editMode ? (
+          <div className='profile-form'>
+            <label>
+              First Name:
+              <input
+                name='firstName'
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Last Name:
+              <input
+                name='lastName'
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Age:
+              <input
+                name='age'
+                type='number'
+                value={formData.age}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Company Name:
+              <input
+                name='companyName'
+                value={formData.companyName}
+                onChange={handleChange}
+              />
+            </label>
+            <button onClick={handleSave}>Save</button>
+          </div>
+        ) : (
+          <div className='profile-display'>
+            <p>
+              <strong>First Name:</strong> {profile.firstName}
+            </p>
+            <p>
+              <strong>Last Name:</strong> {profile.lastName}
+            </p>
+            <p>
+              <strong>Age:</strong> {profile.age}
+            </p>
+            <p>
+              <strong>Company:</strong> {profile.companyName}
+            </p>
+            <button onClick={() => setEditMode(true)}>Edit Profile</button>
+          </div>
+        )}
+      </section>
+    </main>
+  );
 }
 
-export default App
+export default App;
