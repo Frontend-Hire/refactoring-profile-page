@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import { fetchProfile, saveProfile } from './features/profile/api';
 import ProfileDisplay from './features/profile/profile-display';
 import ProfileForm from './features/profile/profile-form';
 import type { ProfileType } from './features/profile/types';
@@ -10,23 +11,19 @@ function App() {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      const fakeData: ProfileType = {
-        firstName: 'John',
-        lastName: 'Doe',
-        age: 30,
-        companyName: 'OpenAI',
-      };
-      setProfile(fakeData);
+    fetchProfile().then((data) => {
+      setProfile(data);
       setIsLoading(false);
-    }, 1000);
+    });
   }, []);
 
   const handleSave = (formData: ProfileType) => {
-    setTimeout(() => {
-      setProfile(formData);
+    setIsLoading(true);
+    saveProfile(formData).then((savedData) => {
+      setProfile(savedData);
       setEditMode(false);
-    }, 1000);
+      setIsLoading(false);
+    });
   };
 
   if (!profile || isLoading) return <p>Loading profile...</p>;
