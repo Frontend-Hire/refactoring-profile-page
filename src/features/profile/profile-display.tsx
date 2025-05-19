@@ -2,10 +2,10 @@ import type { ProfileType } from './types';
 
 export default function ProfileDisplay({
   profile,
-  setEditMode,
+  onEnableEditMode,
 }: {
   profile: ProfileType;
-  setEditMode: (value: boolean) => void;
+  onEnableEditMode: () => void;
 }) {
   return (
     <div className='profile-display'>
@@ -21,7 +21,7 @@ export default function ProfileDisplay({
       <p>
         <strong>Company:</strong> {profile.companyName}
       </p>
-      <button onClick={() => setEditMode(true)}>Edit Profile</button>
+      <button onClick={onEnableEditMode}>Edit Profile</button>
     </div>
   );
 }

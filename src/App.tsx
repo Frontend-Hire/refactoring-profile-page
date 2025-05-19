@@ -1,41 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
-import { fetchProfile, saveProfile } from './features/profile/api';
 import ProfileDisplay from './features/profile/profile-display';
 import ProfileForm from './features/profile/profile-form';
-import type { ProfileType } from './features/profile/types';
+import useProfile from './features/profile/use-profile';
 
 function App() {
-  const [profile, setProfile] = useState<ProfileType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const { data: profile, isLoading, isError } = useProfile();
 
-  useEffect(() => {
-    fetchProfile().then((data) => {
-      setProfile(data);
-      setIsLoading(false);
-    });
-  }, []);
+  if (isLoading) return <p>Loading profile...</p>;
 
-  const handleSave = (formData: ProfileType) => {
-    setIsLoading(true);
-    saveProfile(formData).then((savedData) => {
-      setProfile(savedData);
-      setEditMode(false);
-      setIsLoading(false);
-    });
+  if (!profile) return <p>No profile found</p>;
+
+  if (isError) return <p>Error loading profile</p>;
+
+  const onSave = () => {
+    setEditMode(false);
   };
 
-  if (!profile || isLoading) return <p>Loading profile...</p>;
+  const onEnableEditMode = () => {
+    setEditMode(true);
+  };
 
   return (
     <main>
       <section className='section'>
         <h1>Profile Page</h1>
         {editMode ? (
-          <ProfileForm initialFormData={profile} handleSave={handleSave} />
+          <ProfileForm initialFormData={profile} onSave={onSave} />
         ) : (
-          <ProfileDisplay profile={profile} setEditMode={setEditMode} />
+          <ProfileDisplay
+            profile={profile}
+            onEnableEditMode={onEnableEditMode}
+          />
         )}
       </section>
     </main>
